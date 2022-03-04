@@ -1,3 +1,6 @@
+// 注: 还可继续对while循环里的for语句进行优化,去掉for循环并且只用一个int来判断是否需要return true; 参见76.最小覆盖子串
+//     此处只是把 判断map1==map2 优化成了 判断map==0.  若map1==map2则表明窗口[left,right]是s1的一种错排
+
 class Solution {
 public:
     bool checkInclusion(string s1, string s2) {
@@ -17,6 +20,7 @@ public:
         }
         return false;
     }
+    
     // // 上面是优化后的方法, 原始方法如下：
     // bool checkInclusion(string s1, string s2) {
     //     int left = 0,  right = s1.size()-1;
