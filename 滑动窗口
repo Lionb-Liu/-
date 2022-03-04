@@ -1,0 +1,26 @@
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        // 使用哈希表T 方便判断某个字母是否属于t之中
+        map<char,int> mp, T;
+        for(auto cha : t)
+            mp[cha]--, T[cha]=1;
+        // 用count记录[left:right]的窗口中 包含了t的几种字母(且每种字母的个数>=它在t中的相应个数)
+        int count = 0,  left = 0,  right = 0,  ansL = -1,  ansR = 1e5;
+        while(right < s.size()){
+            if( T[s[right]] )
+                if( ++mp[s[right]] == 0 )
+                    ++count;  //运行至此行则表明s[right]属于t,且当前窗口能覆盖t的所有s[right]
+            //由left++收缩窗口, 当count==mp.size()时表明 窗口[left:right]能覆盖t的所有字符
+            while(count == mp.size())
+                if( T[s[left++]] ){
+                    if( mp[s[left-1]]-- == 0 )
+                        count--;
+                    if( right-left < ansR-ansL )
+                        ansL=left-1,  ansR=right;
+                }
+            right++;
+        }
+        return ansL==-1 ? "" : s.substr(ansL, ansR-ansL+1);
+    }
+};
