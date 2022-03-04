@@ -1,0 +1,38 @@
+class Solution {
+public:
+    bool checkInclusion(string s1, string s2) {
+        int left = 0,  right = s1.size()-1;
+        if( s1.size() > s2.size() )
+            return false;
+        map<char,int> map;  //若map里的值全为0则说明s2[left,right]是s1的一种排列
+        for(int i=0; i<=right; i++)
+            map[s1[i]]--,  map[s2[i]]++;
+        //滑动窗口, 不断向右移一格, 观察当前窗口内的子串是否为s1的排列:
+        while(right < s2.size()){
+            for(auto iter=map.begin();  iter!=map.end();  ) //判断map里的值是否全为0
+                if(iter->second != 0)  break;
+                else if(++iter == map.end())  return true;
+            map[s2[++right]]++;
+            map[s2[left++]]--;
+        }
+        return false;
+    }
+    // // 上面是优化后的方法, 原始方法如下：
+    // bool checkInclusion(string s1, string s2) {
+    //     int left = 0,  right = s1.size()-1;
+    //     map<char,int> map1, map2;
+    //     for(auto cha : s2)
+    //         map1[cha],  map2[cha]; //初始化两个map,按照size大的s2来,便于比较map2==map1
+    //     for(auto cha : s1)
+    //         map1[cha]++;
+    //     for(int i=0;  i<=right && i<s2.size();  i++)
+    //         map2[s2[i]]++;
+    //     while(right < s2.size()){
+    //         if(map2 == map1)
+    //             return true;
+    //         map2[s2[++right]]++;
+    //         map2[s2[left++]]--;
+    //     }
+    //     return false;
+    // }
+};
