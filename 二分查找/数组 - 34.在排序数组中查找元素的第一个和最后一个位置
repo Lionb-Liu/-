@@ -1,0 +1,33 @@
+class Solution {
+public:
+    vector<int> searchRange(vector<int>& nums, int target) {
+        return recursion( nums, target, 0, nums.size()-1 );
+    }
+
+    vector<int> recursion(vector<int> nums, int target, int left, int right){
+        if(left > right)  return {-1,-1};
+        int mid = (left + right) / 2;
+        if(nums[mid] > target)  return recursion( nums, target, left,  mid-1 );
+        if(nums[mid] < target)  return recursion( nums, target, mid+1, right );
+    //  if(nums[mid] == target)
+        return { mostLeft(nums,target,left,mid) , mostRight(nums,target,mid,right) };
+    }
+
+    // 递归搜索要寻找的左边界
+    int mostLeft(vector<int> nums, int target, int left, int right){
+        if(left == right)  return left;
+        int mid = (left + right) / 2;
+        if(nums[mid] == target)  return mostLeft(nums, target, left, mid);
+    //  if(nums[mid] <  target)
+        return mostLeft(nums, target, mid+1, right);
+    }
+
+    // 递归搜索要寻找的右边界
+    int mostRight(vector<int> nums, int target, int left, int right){
+        if(left == right)  return right;
+        int mid = (left + right + 1) / 2;  //注意此处需要向上取整所以+1
+        if(nums[mid] == target)  return mostRight(nums, target, mid, right);
+    //  if(nums[mid] >  target)
+        return mostRight(nums, target, left, mid-1);
+    }
+};
