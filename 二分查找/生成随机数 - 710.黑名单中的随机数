@@ -44,3 +44,38 @@ public:
         return blacklist[left];
     }
 };
+
+
+
+
+/*
+// 思路二：
+class Solution {
+public:
+    int whitelistSize, blacklistSize;
+    map<int,int> mp;  //在逻辑上把小于whiteSize的黑名单数字移动到数组[0,n)的尾部
+
+    Solution(int n, vector<int>& blacklist) {
+        blacklistSize = blacklist.size();
+        whitelistSize = n - blacklistSize;
+        sort( blacklist.begin() , blacklist.end() );
+        //找到blacklist里面大于等于whitelistSize的最小值,最终为blacklist[left]
+        int left = 0,  right = blacklistSize-1,  mid;
+        while(left < right){
+            mid = left + (right - left) / 2;
+            if(blacklist[mid] < whitelistSize)
+                left = mid + 1;
+            else
+                right = mid;
+        }
+        for(int j=0, i=whitelistSize;  i<n;  i++)
+            if(i != blacklist[left])    mp[ blacklist[j++] ] = i;
+            else    left = min(++left, blacklistSize-1);
+    }
+    
+    int pick() {
+        int index = rand() % whitelistSize;
+        return mp[index] ? mp[index] : index;
+    }
+};
+*/
