@@ -14,3 +14,41 @@ public:
         return root;
     }
 };
+
+
+
+
+
+
+
+
+
+
+/*
+// 方法二:层序遍历
+class Solution {
+public:
+    Node* connect(Node* root) {
+        if(root == NULL)  return root;
+        int count = 2;  //在层序遍历时 判断q.front()是否跳到了下一层
+        Node *now, *last=root;
+        queue<Node*> q;
+        q.push(root->left);
+        q.push(root->right);
+        while(q.front() != NULL){
+            now = q.front();
+            if(q.size() != count)
+                last->next = now;
+            else{
+                last->next = NULL;
+                count *= 2;
+            }
+            last = now;
+            q.push(now->left);
+            q.push(now->right);
+            q.pop();
+        }
+        return root;
+    }
+};
+*/
