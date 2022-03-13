@@ -1,0 +1,59 @@
+//此迭代解法的优化版本即官方解答中的迭代解法
+class Solution {
+public:
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        map<int,int> index;  //便于查询各节点在中序遍历里的相对位置
+        for(int i=0;  i<inorder.size();  i++)
+            index[ inorder[i] ] = i;
+        TreeNode *root = new TreeNode(preorder[0]),  *nowNode,  *parent;
+        stack<TreeNode*> stk;
+        stk.push(root);
+        for(int i=1;  i<preorder.size();  i++)
+            //如果preorder里的当前节点 在 栈顶节点的 左边
+            if( index[ preorder[i] ]  <  index[ stk.top()->val ] ){
+                nowNode = new TreeNode(preorder[i]);
+                stk.top()->left = nowNode;
+                stk.push(nowNode);
+            }
+            //如果preorder里的当前节点 在 栈顶节点的 右边
+            else{
+                while( !stk.empty()  &&  index[preorder[i]] > index[stk.top()->val] )
+                    parent = stk.top(),  stk.pop();  //弹栈,寻找当前节点的父节点
+                nowNode = new TreeNode(preorder[i]);
+                parent->right = nowNode;
+                stk.push(nowNode);
+            }
+        return root;
+    }
+};
+
+
+
+
+
+
+
+
+
+/*
+//未优化的简单递归版本：
+class Solution {
+public:
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        if(preorder.size() == 0)
+            return nullptr;
+        int rootNum = preorder[0];
+        auto it = inorder.begin();
+        for( ;  it != inorder.end();  it++)
+            if(*it == rootNum)  break;
+        vector<int> left_inorder(inorder.begin(), it);
+        vector<int> right_inorder(it+1, inorder.end());
+        vector<int> left_preorder(preorder.begin()+1 , preorder.begin()+left_inorder.size()+1);
+        vector<int> right_preorder(preorder.begin()+left_inorder.size()+1 , preorder.end());
+        TreeNode *root = new TreeNode(rootNum);
+        root -> left = buildTree(left_preorder, left_inorder);
+        root -> right= buildTree(right_preorder, right_inorder);
+        return root;
+    }
+};
+*/
