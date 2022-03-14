@@ -1,0 +1,68 @@
+/*
+执行用时：16 ms, 在所有 C++ 提交中击败了82.97%的用户
+内存消耗：25.3 MB, 在所有 C++ 提交中击败了73.97%的用户
+通过测试用例：202 / 202
+*/
+
+
+
+// 只需将[105.从前序与中序遍历序列构造二叉树]题的迭代解法倒过来遍历
+class Solution {
+public:
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        map<int,int> index;  //便于查询各节点在中序遍历里的相对位置
+        int n = postorder.size();
+        for(int i=0; i<n; i++)
+            index[ inorder[i] ] = i;
+        TreeNode *root = new TreeNode( postorder[n-1] ),  *node,  *parent;
+        stack<TreeNode*> stk;
+        stk.push(root);
+        for(int i=n-2;  i>-1;  i--)  //倒过来从后往前的遍历
+            //如果postorder里的当前节点 在 栈顶节点的 右边
+            if(index[ postorder[i] ]  >  index[ stk.top()->val ]){
+                node = new TreeNode( postorder[i] );
+                stk.top()->right = node;
+                stk.push(node);
+            }
+            //如果postorder里的当前节点 在 栈顶节点的 左边
+            else{
+                while(!stk.empty()  &&  index[ postorder[i] ]  <  index[ stk.top()->val ])
+                    parent = stk.top(),  stk.pop();
+                node = new TreeNode( postorder[i] );
+                parent->left = node;
+                stk.push(node);
+            }
+        return root;
+    }
+};
+
+
+
+
+
+
+
+
+
+
+/*
+//未优化的简单递归版本：
+class Solution {
+public:
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        int n = postorder.size();
+        if(0 == n)  return nullptr;
+        int rootNum = postorder[n-1],  i = 0;
+        for( ; i<n; i++)
+            if(inorder[i] == rootNum)  break;
+        vector<int> leftInorder(inorder.begin() , inorder.begin()+i);
+        vector<int> rightInorder(inorder.begin()+i+1 , inorder.end());
+        vector<int> leftPostorder(postorder.begin() , postorder.begin()+i);
+        vector<int> rightPostorder(postorder.begin()+i , postorder.end()-1);
+        TreeNode* root = new TreeNode(rootNum);
+        root->left = buildTree(leftInorder, leftPostorder);
+        root->right= buildTree(rightInorder,rightPostorder);
+        return root;
+    }
+};
+*/
