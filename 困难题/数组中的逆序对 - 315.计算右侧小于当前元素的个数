@@ -1,0 +1,49 @@
+class Solution {
+    //归并排序不能原地合并,用于避免在归并排序中频繁创建临时数组
+    vector<int> tempNums;
+    //记录nums中的每个数字的下标,如果用map<int,vector<int>>也会无法处理nums中含有重复数字的情况
+    vector<int> index;
+    //排序的过程中,保持原数组nums和下标数组index同步变化
+    vector<int> tempIndex;
+    //返回的counts[i]的值是nums[i]右侧小于nums[i]的元素的数量
+    vector<int> counts;
+
+public:
+    vector<int> countSmaller(vector<int>& nums) {
+        int n = nums.size();
+        index.resize(n);
+        for(int i=0; i<n; i++)  index[i] = i;
+        counts.resize(n);
+        tempNums.resize(n);
+        tempIndex.resize(n);
+        mergeSort(nums, 0, n-1);
+        return counts;
+    }
+
+    void mergeSort(vector<int>& nums,  int low,  int high){
+        if(low >= high)  return ;
+        int mid = (low+high)/2,  left = low,  right = mid + 1,  i = 0;
+        mergeSort(nums, low, mid);
+        mergeSort(nums, mid+1, high);
+        //后序遍历
+        while(left <= mid  &&  right <= high)
+            if( nums[left] <= nums[right] )
+                counts[ index[left] ] += right-mid-1,  //同步地处理counts
+                tempNums[i] = nums[left],
+                tempIndex[i++] = index[left++];
+            else
+                tempNums[i] = nums[right],
+                tempIndex[i++] = index[right++];
+        while(left <= mid)
+            counts[ index[left] ] += high-mid,
+            tempNums[i] = nums[left],
+            tempIndex[i++] = index[left++];
+        while(right <= high)
+            tempNums[i] = nums[right],
+            tempIndex[i++] = index[right++];
+        //每一层迭代都用 tempNums[0 : high-low] 储存 nums[low : high] 排序后的结果
+        for(int i=low;  i<=high;  i++)
+            nums[i]  = tempNums[i-low],
+            index[i] = tempIndex[i-low];
+    }
+};
