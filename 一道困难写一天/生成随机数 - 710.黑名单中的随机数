@@ -1,0 +1,82 @@
+class Solution {
+    int whitelistSize, blacklistSize;
+    vector<int> blacklist;
+    map<int,int> offset;  //记录blacklist中的各个数字对应的偏移量
+
+public:
+    Solution(int n, vector<int>& blacklist){
+        blacklistSize = blacklist.size();
+        whitelistSize = n - blacklistSize;
+        sort( blacklist.begin() , blacklist.end() );
+        this->blacklist = blacklist;
+        for(int i=0; i<blacklistSize; i++)
+            offset[ blacklist[i] ] = i + 1;
+    }
+
+    int pick(){
+        int ans = rand() % whitelistSize;
+        // 返回whitelist中的第ans个数字,用二分查找直接计算出偏移量low
+        int low = offset[search(ans)],  mid,  high = blacklistSize;
+        if(low == offset[search(ans+low)])
+            return ans + low;
+        while(low < high){
+            mid = low + (high - low + 1) / 2;
+            if( mid  >  offset[search(ans + mid)] - 1 )
+                high = mid - 1;
+            else //if( mid  <=  offset[search(ans + mid)] - 1 )
+                low = mid;
+        }
+        return min( ans+low+1 , ans+blacklistSize );
+    }
+
+    int search(int num){
+        //返回blacklist里面小于等于num的最大值
+        if(blacklistSize == 0 || blacklist[0] >= num)
+            return num;
+        int left = 0,  right = blacklistSize - 1,  mid;
+        while(left < right){  //二分查找右边界+向上取整
+            mid = left + (right - left + 1) / 2;
+            if(blacklist[mid] > num)
+                right = mid - 1;
+            else
+                left = mid;
+        }
+        return blacklist[left];
+    }
+};
+
+
+
+
+
+/*
+// 思路二, 让数组在逻辑上是连续的, 便于随机访问：
+class Solution {
+public:
+    int whitelistSize, blacklistSize;
+    map<int,int> mp;  //在逻辑上把小于whiteSize的黑名单数字移动到数组[0,n)的尾部
+
+    Solution(int n, vector<int>& blacklist) {
+        blacklistSize = blacklist.size();
+        whitelistSize = n - blacklistSize;
+        sort( blacklist.begin() , blacklist.end() );
+        //找到blacklist里面大于等于whitelistSize的最小值,最终为blacklist[left]
+        int left = 0,  right = blacklistSize-1,  mid;
+        while(left < right){
+            mid = left + (right - left) / 2;
+            if(blacklist[mid] < whitelistSize)
+                left = mid + 1;
+            else
+                right = mid;
+        }
+        for(int j=0, i=whitelistSize;  i<n;  i++)
+            if(i != blacklist[left])    mp[ blacklist[j++] ] = i;
+            else    left = min(++left, blacklistSize-1);
+    }
+    
+    int pick() {
+        int index = rand() % whitelistSize;
+        return mp[index] ? mp[index] : index;
+    }
+};
+*/
