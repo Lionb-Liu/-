@@ -1,0 +1,58 @@
+/*
+执行用时：292 ms, 在所有 C++ 提交中击败了95.05%的用户
+内存消耗：66.6 MB, 在所有 C++ 提交中击败了93.29%的用户
+通过测试用例：67 / 67
+*/
+
+
+
+class Solution {
+    int count = 0,  lower,  upper;
+    vector<long long> tempNums;  //归并排序不能原地合并,用于避免在归并排序中频繁创建临时数组
+
+public:
+    int countRangeSum(vector<int>& nums, int lower, int upper) {
+        int n = nums.size();
+        this->lower = lower;
+        this->upper = upper;
+        tempNums.resize(n);
+        vector<long long> preSum(nums.begin(), nums.end());
+        for(int i=1;  i<n;  i++)
+            preSum[i] += preSum[i-1];
+        mergeSort(preSum, 0, --n);
+        return count;
+    }
+
+    void mergeSort(vector<long long>& nums,  int low,  int high){
+        if(low == high  &&  nums[low] >= lower  &&  nums[low] <= upper)
+            count++; //注意此处的贡献值易漏
+        if(low >= high)
+            return;
+        int margin = (low + high)/2 + 1;
+        mergeSort(nums, low, margin - 1);
+        mergeSort(nums, margin, high);
+        //后序遍历,用滑动窗口确保preSum[windowLeft:windowRight)里的值都包含于[lowerBound:upperBound]
+        long long lowerBound, upperBound;
+        for(int i=margin,  windowLeft=low,  windowRight=low;  i <= high;  i++){
+            lowerBound = nums[i] - upper;
+            upperBound = nums[i] - lower;
+            while(windowLeft < margin   &&  nums[windowLeft] < lowerBound)
+                windowLeft++;
+            while(windowRight < margin  &&  nums[windowRight] <= upperBound)
+                windowRight++;
+            count += windowRight - windowLeft;
+        }
+        //每一层递归都用tempNums[low:high]储存preSum[low:high]排序后的结果
+        for(int i=low, left=low, right=margin;  i <= high;  )
+            if(left == margin)
+                tempNums[i++] = nums[right++];
+            else if(right > high)
+                tempNums[i++] = nums[left++];
+            else if(nums[left] < nums[right])
+                tempNums[i++] = nums[left++];
+            else
+                tempNums[i++] = nums[right++];
+        for(int i = low;  i <= high;  i++)
+            nums[i] = tempNums[i];
+    }
+};
