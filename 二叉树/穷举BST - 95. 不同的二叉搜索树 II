@@ -1,0 +1,57 @@
+/*
+执行用时：12 ms, 在所有 C++ 提交中击败了94.86%的用户
+内存消耗：12.7 MB, 在所有 C++ 提交中击败了95.59%的用户
+*/
+
+
+
+class Solution {
+    //用shapes[n]记录由n个节点组成的二叉树的形状(结构),每个shapes[n][i]是一种形状(结构)的根节点
+    map< int, vector<TreeNode*> > shapes;
+
+public:
+    vector<TreeNode*> generateTrees(int n) {
+        vector<TreeNode*> ans;
+        for(int i=0;  i<=n;  i++)
+            generateShapes(i);
+        for(auto shape : shapes[n]){
+            int num = 0;
+            //因为shapes[n]里的各个树会共用子节点的地址,必须拷贝一份新的树,才能给新树的节点填充value
+            TreeNode* root = copyShapeToGenerateNewTree(shape);
+            fillNums(root, num);
+            ans.push_back(root);  //如果不拷贝新的树则ans里面保存的各个答案全部都一样
+        }
+        return ans;
+    }
+
+    void generateShapes(int n){
+        if(n >= 2)
+            for(int i=0;  i<=n-1;  i++)  //左子树的节点个数
+                for(auto shapeLeft : shapes[i])  //枚举左子树可能的形状(结构)
+                    for(auto shapeRight : shapes[n-1-i]){  //枚举右子树可能的形状(结构)
+                        TreeNode* root = new TreeNode;
+                        root->left  = shapeLeft;
+                        root->right = shapeRight;
+                        shapes[n].push_back(root);
+                    }
+        else if(n == 0)  shapes[0].push_back(nullptr);
+        else if(n == 1)  shapes[1].push_back(new TreeNode);
+    }
+
+    TreeNode* copyShapeToGenerateNewTree(TreeNode* shape){
+        if(shape == nullptr)
+            return nullptr;
+        TreeNode* root = new TreeNode;
+        root->left  = copyShapeToGenerateNewTree(shape->left);
+        root->right = copyShapeToGenerateNewTree(shape->right);
+        return root;
+    }
+
+    void fillNums(TreeNode* root, int& num){
+        if(root){
+            fillNums(root->left, num);
+            root->val = ++num;  //给树的节点填充value
+            fillNums(root->right, num);
+        }
+    }
+};
