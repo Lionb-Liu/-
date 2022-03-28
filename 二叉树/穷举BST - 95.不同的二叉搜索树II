@@ -23,6 +23,7 @@ public:
         }
         return ans;
     }
+    
 
     void generateShapes(int n){
         if(n >= 2)
@@ -37,6 +38,7 @@ public:
         else if(n == 0)  shapes[0].push_back(nullptr);
         else if(n == 1)  shapes[1].push_back(new TreeNode);
     }
+    
 
     TreeNode* copyShapeToGenerateNewTree(TreeNode* shape){
         if(shape == nullptr)
@@ -46,6 +48,7 @@ public:
         root->right = copyShapeToGenerateNewTree(shape->right);
         return root;
     }
+    
 
     void fillNums(TreeNode* root, int& num){
         if(root){
