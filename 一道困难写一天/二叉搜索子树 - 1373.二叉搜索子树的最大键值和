@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int maxSumBST(TreeNode* root){
+        if( isBST(root, INT_MIN, INT_MAX) ){
+            int sumBST = 0; //累加以root为根的BST的所有键值
+            return maxSumBST_in_BST(root, sumBST);
+        }
+        else  return max( maxSumBST(root->left) , maxSumBST(root->right) );
+    }
+
+    //在以root为根的BST里面返回任意二叉搜索子树的最大键值和
+    int maxSumBST_in_BST(TreeNode* root, int& sumBST){
+        if(root == nullptr)  return 0;
+        int sumLeftBST = 0,  sumRightBST = 0;
+        int maxSumLeftBST  = maxSumBST_in_BST( root->left , sumLeftBST );
+        int maxSumRightBST = maxSumBST_in_BST( root->right , sumRightBST );
+        sumBST = sumLeftBST + sumRightBST + root->val;
+        return max({ maxSumLeftBST , maxSumRightBST , sumBST });
+    }
+
+    //判断以root为根的二叉树是否为二叉搜索树
+    bool isBST(TreeNode* root, int lower, int upper){
+        if(root == nullptr)
+            return true;
+        if(lower < root->val  &&  root->val < upper)
+            return isBST(root->left, lower, root->val) && isBST(root->right, root->val, upper);
+        else
+            return false;
+    }
+};
