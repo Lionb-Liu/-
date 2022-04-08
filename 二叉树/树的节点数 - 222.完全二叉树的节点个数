@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int countNodes(TreeNode* root) {
+        TreeNode* node = root;
+        int heightLeft = 0;
+        while(node){
+            heightLeft++;
+            node = node->left;
+        }
+        int heightRight = 0;  node = root;
+        while(node){
+            heightRight++;
+            node = node->right;
+        }
+        //完全二叉树的左右两个子树, 必然一个是满二叉树, 另一个是普通的完全二叉树
+        //如果当前的树是满二叉树(Perfect Binary Tree), 则, 直接计算出节点个数(2^h - 1)
+        if(heightLeft == heightRight)
+            return (1 << heightRight) - 1;
+        //否则, 普通树的解法, 递归计算左子树和右子树的节点个数
+        else
+            return countNodes(root->left) + countNodes(root->right) + 1;
+    }
+};
+
+//最优版本：利用在完全二叉树中搜索第k个节点的性质 + 二分查找
