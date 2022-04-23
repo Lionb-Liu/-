@@ -1,0 +1,56 @@
+//并查集
+class UnionFind {
+    vector<int> parent;
+public:
+    UnionFind(int n){
+        parent.resize(n);
+        for(int i=1; i<n; i++)  parent[i] = i;
+    }
+
+    void _union(int a, int b){
+        parent[find(a)] = find(b);
+    }
+
+    int find(int a){
+        if(parent[a] != a)  //路径压缩
+            parent[a] = find(parent[a]);
+        return parent[a];
+    }
+};
+
+
+//边,记录两个端点的节点编号和长度
+class Edge {
+public:
+    int a, b, length;
+    Edge(int a, int b, int length) : a(a), b(b), length(length) {}
+    bool operator<(Edge edge) {return length < edge.length;}
+};
+
+
+class Solution {
+public:
+    int minCostConnectPoints(vector<vector<int>>& points) {
+        int n = points.size(),  ans = 0;
+        //生成两两节点之间的边,存储在edges,然后用KRUSKAL最小生成树算法:
+        vector<Edge> edges;
+        for(int i=0; i<n; i++)
+            for(int j=0; j<i; j++){
+                Edge edge( j, i, distance(points[j], points[i]) );
+                edges.push_back(edge);
+            }
+        sort(edges.begin(), edges.end());
+        //用并查集防止在KRUSKAL最小生成树算法的过程中产生环:
+        UnionFind uf(n);
+        for(Edge edge : edges)
+            if( uf.find(edge.a) != uf.find(edge.b) ){
+                uf._union(edge.a, edge.b); //将当前edge添加到最小生成树中
+                ans += edge.length;
+            }
+        return ans;
+    }
+
+    int distance(vector<int> point1,  vector<int> point2){
+        return abs(point1[0] - point2[0]) + abs(point1[1] - point2[1]);
+    }
+};
