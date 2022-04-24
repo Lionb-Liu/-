@@ -67,7 +67,7 @@ class Edge {
 public:
     int from, to, length;
     Edge(int from=0, int to=0, int length=0) : from(from), to(to), length(length) {}
-    //注意此处在重载是必须设成友元函数,否则无法将Edge类型的变量加入优先队列中
+    //注意此处在重载是必须设成友元函数,或者bool operator<(const Edge &A) const{ },否则无法将Edge类型的变量加入优先队列中
     friend bool operator<(Edge edge1, Edge edge2) {return edge1.length > edge2.length;}
 };
 
