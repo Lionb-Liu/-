@@ -1,3 +1,4 @@
+//KRUSKAL算法
 //并查集
 class UnionFind {
     vector<int> parent;
@@ -54,3 +55,51 @@ public:
         return abs(point1[0] - point2[0]) + abs(point1[1] - point2[1]);
     }
 };
+
+
+
+
+
+/*
+//PRIM算法
+//边:记录两个端点的节点编号和边的长度
+class Edge {
+public:
+    int from, to, length;
+    Edge(int from=0, int to=0, int length=0) : from(from), to(to), length(length) {}
+    //注意此处在重载是必须设成友元函数,否则无法将Edge类型的变量加入优先队列中
+    friend bool operator<(Edge edge1, Edge edge2) {return edge1.length > edge2.length;}
+};
+
+class Solution {
+public:
+    int minCostConnectPoints(vector<vector<int>>& points) {
+        int n = points.size(),  ans = 0;
+        priority_queue<Edge>  q;
+        vector<bool> visited(n);
+        //处理节点0,把所有和节点0相连的边都push进优先队列:
+        visited[0] = true;
+        for(int i=1; i<n; i++)
+            q.push(  Edge(0, i, distance(points[0], points[i]))  );
+        //广度优先搜索:
+        Edge edge;
+        while(!q.empty()){
+            edge = q.top();
+            q.pop(); //优先队列q的队首始终是长度最小的边
+            if(visited[edge.to])
+                continue;
+            visited[edge.to] = true;
+            ans += edge.length; //当前的边edge是最小生成树的组成部分
+            for(int i=0; i<n; i++)
+                if(!visited[i]) //注意下面一行中的 edge.to 和 i 不能颠倒前后顺序 !!!!!!!!!
+                    q.push(  Edge(edge.to, i, distance(points[edge.to], points[i]))  );
+        }
+        return ans;
+    }
+
+    //计算节点1和节点2之间的距离
+    int distance(vector<int> point1,  vector<int> point2){
+        return abs(point1[0] - point2[0]) + abs(point1[1] - point2[1]);
+    }
+};
+*/
