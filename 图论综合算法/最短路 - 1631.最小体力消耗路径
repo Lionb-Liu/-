@@ -1,0 +1,115 @@
+class Solution {
+public:
+    int minimumEffortPath(vector<vector<int>>& heights) {
+        int n = heights.size(),  m = heights[0].size();
+        vector<int> curNode(2); //curNode[0]记录节点编号, curNode[1]记录从start到curNode的最短距离
+        vector<int> distFromStartTo(m*n, INT_MAX); //迪杰斯特拉算法求最短路
+        
+        auto cmp = [](auto& node1, auto& node2) -> bool {return node1[1] > node2[1];};
+        priority_queue< vector<int>, vector<vector<int>>, decltype(cmp) >  pq(cmp);
+
+        int start = 0,  end = m*n-1,  curX,  curY,  neighborID,  distFromStartToNeighbor;
+        distFromStartTo[start] = 0;
+        pq.push({start, 0});
+        while(!pq.empty()){
+            curNode = pq.top();  pq.pop();
+            if(curNode[0] == end)
+                return curNode[1];
+            curX = curNode[0] / m;  //当前节点处于第X行
+            curY = curNode[0] % m;  //当前节点处于第Y列
+            // 当前节点:上面的邻居
+            if(curX > 0){
+                neighborID = curNode[0] - m;
+                distFromStartToNeighbor = max(curNode[1], abs(heights[curX][curY]-heights[curX-1][curY]));
+                if(distFromStartTo[neighborID] > distFromStartToNeighbor){
+                    distFromStartTo[neighborID] = distFromStartToNeighbor;
+                    pq.push({neighborID, distFromStartToNeighbor});
+                }
+            }
+            // 当前节点:下面的邻居
+            if(curX < n-1){
+                neighborID = curNode[0] + m;
+                distFromStartToNeighbor = max(curNode[1], abs(heights[curX][curY]-heights[curX+1][curY]));
+                if(distFromStartTo[neighborID] > distFromStartToNeighbor){
+                    distFromStartTo[neighborID] = distFromStartToNeighbor;
+                    pq.push({neighborID, distFromStartToNeighbor});
+                }
+            }
+            // 当前节点:左面的邻居
+            if(curY > 0){
+                neighborID = curNode[0] - 1;
+                distFromStartToNeighbor = max(curNode[1], abs(heights[curX][curY]-heights[curX][curY-1]));
+                if(distFromStartTo[neighborID] > distFromStartToNeighbor){
+                    distFromStartTo[neighborID] = distFromStartToNeighbor;
+                    pq.push({neighborID, distFromStartToNeighbor});
+                }
+            }
+            // 当前节点:右面的邻居
+            if(curY < m-1){
+                neighborID = curNode[0] + 1;
+                distFromStartToNeighbor = max(curNode[1], abs(heights[curX][curY]-heights[curX][curY+1]));
+                if(distFromStartTo[neighborID] > distFromStartToNeighbor){
+                    distFromStartTo[neighborID] = distFromStartToNeighbor;
+                    pq.push({neighborID, distFromStartToNeighbor});
+                }
+            }
+        }
+        return 0;
+    }
+};
+
+
+
+
+
+/*
+//并查集解法
+class UnionFind {
+    vector<int> parent;
+public:
+    UnionFind(int n){
+        parent.resize(n);
+        for(int i=1; i<n; i++)
+            parent[i] = i;
+    }
+
+    void union_(int &a, int &b){
+        parent[find(a)] = find(b);
+    }
+
+    int find(int &a){
+        if(parent[a] != a)
+            parent[a] = find(parent[a]);
+        return parent[a];
+    }
+};
+
+class Solution {
+public:
+    int minimumEffortPath(vector<vector<int>>& heights) {
+        int n = heights.size(),  m = heights[0].size();
+        vector<vector<int>> edges;
+        for(int i = 0, curID;  i < n-1;  i++)
+            for(int j = 0;  j < m-1;  j++){
+                curID = i * m + j;
+                edges.push_back({curID , curID+1 , abs(heights[i][j] - heights[i][j+1])}),
+                edges.push_back({curID , curID+m , abs(heights[i][j] - heights[i+1][j])});
+            }
+        for(int i = 0, j = m-1, curID;  i < n-1;  i++) //补最后一列j==m-1的数据
+            curID = i * m + j,
+            edges.push_back({curID , curID+m , abs(heights[i][j] - heights[i+1][j])});
+        for(int i = n-1, j = 0, curID;  j < m-1;  j++) //补最后一行i==n-1的数据
+            curID = i * m + j,
+            edges.push_back({curID , curID+1 , abs(heights[i][j] - heights[i][j+1])});
+        sort(edges.begin(), edges.end(), [](auto &edge1, auto &edge2)->int{return edge1[2]<edge2[2];});
+        int start = 0,  end = n * m - 1;
+        UnionFind uf(m * n);
+        for(vector<int> &edge : edges){
+            uf.union_(edge[0], edge[1]);
+            if(uf.find(start) == uf.find(end))
+                return edge[2];
+        }
+        return 0;
+    }
+};
+*/
