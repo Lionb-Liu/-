@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        vector<int> heap(1, nums[0]); //heap[i]表示蜘蛛纸牌的一个牌堆,heap从左往右单调递增
+        for(int num : nums)
+            if(heap.back() < num)
+                heap.push_back(num); //新建一个牌堆
+            else
+                heap[leftmost(heap, num)] = num; //把num放在第index个牌堆上面
+        return heap.size();
+    }
+
+    // 返回heap[i]中:大于等于num的最小值的坐标
+    int leftmost(vector<int>& heap, int num) {
+        int left = 0, right = heap.size() - 1, mid;
+        while(left < right){
+            mid = left + (right - left) / 2;
+            if(heap[mid] < num)
+                left = mid + 1;
+            else
+                right = mid;
+        }
+        return left;
+    }
+};
