@@ -1,0 +1,64 @@
+class Solution {
+    int m, n;
+
+public:
+    void solveSudoku(vector<vector<char>>& board) {
+        m = board.size(),  n = board[0].size();
+        vector<pair<int,int>> blank;
+        for(int i = 0; i < m; i++)
+            for(int j = 0; j < n; j++)
+                if(board[i][j] == '.')
+                    blank.emplace_back(i, j);  //没有填写数字的格子
+        fillNum(board, blank);
+    }
+
+
+    bool fillNum(vector<vector<char>>& board, vector<pair<int,int>>& blank) {
+        auto coordinat = blank.rbegin();  //没有填写数字的格子的坐标
+        if(coordinat == blank.rend())
+            return true;
+        set<char> set1 = subBoxes(board, coordinat->first, coordinat->second);
+        set<char> set2 = row(board, coordinat->first);
+        set<char> set3 = column(board, coordinat->second);
+        for(char num = '0';  num++ < '9';  ) {
+            if(set1.find(num) != set1.end()  ||  set2.find(num) != set2.end()  ||  set3.find(num) != set3.end())
+                continue;
+            board[coordinat->first][coordinat->second] = num;
+            blank.pop_back();
+            if( fillNum(board, blank) )
+                return true;
+            board[coordinat->first][coordinat->second] = '.';
+            blank.emplace_back(coordinat->first, coordinat->second);
+        }
+        return false;
+    }
+
+
+    // 返回 3x3 sub-boxes 里已经被占用的数字
+    set<char> subBoxes(vector<vector<char>>& board, int& i, int& j) {
+        set<char> ans;
+        int startX = i / 3 * 3,  startY = j / 3 * 3;
+        for(int dx = 0; dx < 3; dx++)
+            for(int dy = 0; dy < 3; )
+                ans.insert(board[startX + dx][startY + dy++]);
+        return ans;
+    }
+
+
+    // 返回 第i行 里已经被占用的数字
+    set<char> row(vector<vector<char>>& board, int& i) {
+        set<char> ans;
+        for(int j = 0; j < n; )
+            ans.insert(board[i][j++]);
+        return ans;
+    }
+    
+
+    // 返回 第j列 里已经被占用的数字
+    set<char> column(vector<vector<char>>& board, int& j) {
+        set<char> ans;
+        for(int i = 0; i < m; )
+            ans.insert(board[i++][j]);
+        return ans;
+    }
+};
