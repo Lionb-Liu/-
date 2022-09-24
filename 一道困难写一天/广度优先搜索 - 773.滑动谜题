@@ -1,0 +1,54 @@
+/*
+执行用时：8 ms, 在所有 C++ 提交中击败了96.05%的用户
+内存消耗：8.3 MB, 在所有 C++ 提交中击败了54.01%的用户
+*/
+
+class Solution {
+public:
+    int slidingPuzzle(vector<vector<int>>& board) {
+        int count = 0,  length,  i,  ii,  k;
+        int x,  y,  dx[4] = {-1, 1, 0, 0},  dy[4] = {0, 0, -1, 1},  nextX,  nextY;
+        string now, next;
+        for(int i = 0; i < 2; i++)
+            for(int j = 0; j < 3; )
+                now += to_string(board[i][j++]);
+        unordered_map<string,bool> visited;
+        queue<string> q;
+        q.push(now);
+        visited[now] = true;
+
+        while(!q.empty()) {
+            length = q.size();
+            for(ii = 0;  ii < length;  ii++) {
+                now = q.front();
+                q.pop();
+                if(now == "123450")
+                    return count;
+                // 寻找'0'的横坐标和纵坐标
+                for(i = 0;  i < 6;  i++)
+                    if(now[i] == '0') {
+                        x = i / 3;
+                        y = i % 3;
+                        break;
+                    }
+                // 遍历'0'可以和哪个数字交换位置
+                for(k = 0; k < 4; k++) {
+                    nextX = x + dx[k];
+                    if(nextX == -1 || nextX == 2)
+                        continue;
+                    nextY = y + dy[k];
+                    if(nextY == -1 || nextY == 3)
+                        continue;
+                    next = now;
+                    swap(next[i], next[nextX * 3 + nextY]);
+                    if(visited[next])
+                        continue;
+                    q.push(next);
+                    visited[next] = true;
+                }
+            }
+            count++;
+        }
+        return -1;
+    }
+};
