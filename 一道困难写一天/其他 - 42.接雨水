@@ -1,0 +1,57 @@
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        int n = height.size();
+        vector<int> partner(n);  //partner[j]表示坐标j左边的最高柱子的坐标
+        for(int i = 0, temp = height[0], j = 0;  ++i < n; ) {
+            partner[i] = j;
+            if(height[i] >= temp)
+                temp = height[i],  j = i;
+        }
+        int ans = 0;
+        for(int i, temp, j = 0;  j < n;  j++) {
+            i = partner[j];  //j是右边缘,i是左边缘,中间的柱子能够被高度为temp的雨水淹没
+            temp = min(height[i], height[j]);
+            while(++i < j)
+                if(temp > height[i])
+                    ans += temp - height[i],
+                    height[i] = temp;
+        }
+        return ans;
+    }
+};
+
+
+
+/*
+// 优化前的原解法：按柱子的高度,从高柱子到低柱子来遍历
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        int n = height.size();
+        map<int,vector<int>> height2locat;
+        for(int i = 0;  i < n;  i++)
+            height2locat[height[i]].push_back(i);
+        vector<int> partner(n);  //partner[j]表示坐标j左边的最高柱子的坐标
+        for(int i = 0, temp = height[0], j = 0;  ++i < n; ) {
+            partner[i] = j;
+            if(height[i] >= temp)
+                temp = height[i],  j = i;
+        }
+        int ans = 0,  i,  temp;
+        vector<bool> used(n); //used[i]==1表示第i个柱子已经被雨水淹没
+        for(auto it = height2locat.end();  --it != height2locat.begin(); )
+            for(int j : it->second) {
+                if(used[j])
+                    continue;
+                i = partner[j];  //j是右边缘,i是左边缘,中间即将要被高度为temp的雨水淹没
+                temp = min(height[i], height[j]);
+                while(++i < j)
+                    if(temp > height[i]  &&  !used[i])
+                        ans += temp - height[i],
+                        used[i] = true;
+            }
+        return ans;
+    }
+};
+*/
