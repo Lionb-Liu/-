@@ -1,0 +1,36 @@
+/*
+执行结果：通过
+显示详情
+添加备注
+执行用时：0 ms, 在所有 C++ 提交中击败了100.00%的用户
+内存消耗：6.2 MB, 在所有 C++ 提交中击败了63.40%的用户
+通过测试用例：68 / 68
+*/
+
+class Solution {
+public:
+    string smallestSubsequence(string s) {
+        vector<bool> inStack(123);
+        vector<int>  remain(123);
+        for(char cha : s)  remain[cha]++;
+        //使用单调栈
+        stack<char> stk;
+        for(char cha : s) {
+            if(inStack[cha]) {
+                remain[cha]--;
+                continue;
+            }
+            while(!stk.empty() && cha < stk.top()) {
+                if(!remain[stk.top()])
+                    break;
+                inStack[stk.top()] = false;
+                stk.pop();
+            }
+            stk.push(cha);  inStack[cha] = true;  --remain[cha];
+        }
+        string ans;
+        while(!stk.empty())
+            ans = stk.top() + ans,  stk.pop();
+        return ans;
+    }
+};
