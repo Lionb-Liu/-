@@ -1,0 +1,20 @@
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        int i = 1, j = 0, n = nums.size();
+        vector<int> ans(n - k + 1);
+        multiset<int> s;
+        queue<multiset<int>::iterator> q;
+        while(j < k)
+            q.push(s.insert(nums[j++]));
+        //初始化完成,利用set来动态维护平衡二叉树,i和j分别是滑动窗口的左右边界:
+        ans[0] = *s.rbegin();
+        while(j < n) {
+            s.erase(q.front());
+            q.pop();
+            q.push(s.insert(nums[j++]));
+            ans[i++] = *(--s.end());
+        }
+        return ans;
+    }
+};
