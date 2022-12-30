@@ -1,0 +1,26 @@
+/*
+执行结果：通过显示详情
+
+执行用时：24 ms, 在所有 C++ 提交中击败了90.43%的用户
+内存消耗：6.3 MB, 在所有 C++ 提交中击败了99.62%的用户
+通过测试用例：
+58 / 58
+*/
+
+class Solution {
+public:
+    short minInsertions(string s) {
+        short i, j, n = s.size(), temp, last; //空间压缩,用last保存dp[i+1][j-1]
+        vector<short> dp(n);
+        for(i = n - 1;  i--; )
+            for(temp = 0, j = i;  ++j < n; ) {
+                last = temp;
+                temp = dp[j]; //等价于未压缩空间时的dp[i+1][j]
+                if(s[i] == s[j])
+                    dp[j] = last; //等价于未压缩空间时的dp[i+1][j-1]
+                else
+                    dp[j] = 1 + min(dp[j], dp[j-1]);
+            }
+        return dp[--n];
+    }
+};
